@@ -1,6 +1,8 @@
 # -*- coding: utf8 -*-
 import configFichier
 import dateparser
+import os
+import fonction
 """
 initialisation de variables
 """
@@ -10,71 +12,43 @@ listemembres = {}
 listelistes ={}
 #toutes les activitées
 listecards = {}
-#tout les types d'activitées
-listetypes = {}
-#dico d'info à mettre dans l'excel pour une card
-card = {}
 """
 ouverture du fichier json 
 """
-with open(configFichier.filejson, "r",encoding="utf-8") as file:
- trello = configFichier.json.load(file)
+response = configFichier.requests.get("https://trello.com/b/Ih8ZoAQ4.json")
+trello = configFichier.json.loads(response.text)
 listecards = trello["cards"]
 listelistes= trello["lists"]
 listemembres = trello["members"]
 """
-recupération des listes à utilisées pour l'excel
-dans une boucle
+verification si le fichier existe déjà
 """
-wb = configFichier.openpyxl.load_workbook(configFichier.filexlsx)
-ws = wb['tasks']
-try:
- for carte in listecards:
-    membreCard = []
-    lab = ""
-    mem = ""
-    #mettre les infos direct de la carte dans le dico
-    card['B'] = carte["name"]
-    card['C'] = carte["desc"]
-    d=dateparser.parse(str(carte["due"]))
-    if d is None:
-        card['D'] = ""
-    else:
-       card['D'] = str(d.day)+"/"+str(d.month)+"/"+str(d.year)
-    for label in carte["labels"]:
-           if lab == "":
-               lab = str(label["name"])
-           else:
-               lab = str(lab)+","+str(label["name"])
-    card['E'] =lab
-    #chercher les id des différentes donnée externe à la carte
-    for liste in listelistes:
-        if carte["idList"] == liste["id"]:
-            card['A'] = liste["name"]
-    for membre in listemembres:
-        for id in carte["idMembers"]:
-             if id == membre["id"]:
-               membreCard.append(membre["initials"])
-    for item in membreCard:
-        if mem == "":
-            mem = str(item)
-        else:
-         mem = str(mem)+","+str(item)
-    card['F'] = mem
-    print(card)
-    ws.column_dimensions['A'].width = 25
-    ws["A1"] = "liste"
-    ws.column_dimensions['B'].width = 65
-    ws["B1"] = "nom tâche"
-    ws.column_dimensions['C'].width = 140
-    ws["C1"] = "description"
-    ws.column_dimensions['D'].width = 25
-    ws["D1"] = "echéance"
-    ws.column_dimensions['E'].width = 35
-    ws["E1"] = "étiquettes"
-    ws["F1"] = "équipe"
-    ws.append(card)
-    card.clear()
-finally:
-    print("fin")
-    wb.save(filename=configFichier.filexlsx)
+if os.path.isfile(configFichier.filename):
+    print("update du fichier")
+    wb = configFichier.openpyxl.load_workbook(configFichier.filename)
+    ws1 = wb["tasks"]
+    #backup de l'ancienne feuille de tasks
+    ws1.title = "backuptasks"
+    #création de la nouvelle feuille
+    ws2 = wb.create_sheet(title="tasks")
+    fonction.stylesheet(ws2)
+    try:
+        fonction.inserttasks(ws2, listecards, listemembres, listelistes)
+            # wrap text pour la colonne des descriptions
+        fonction.wrapcolumn(ws2, listecards)
+    finally:
+        print("fin")
+        wb.save(filename=configFichier.filename)
+else:
+ print("nouveau fichier")
+ wb = configFichier.openpyxl.Workbook()
+ ws = wb.active
+ ws.title = "tasks"
+ fonction.stylesheet(ws)
+ try:
+  fonction.inserttasks(ws, listecards, listemembres, listelistes)
+   #wrap text pour la colonne des descriptions
+  fonction.wrapcolumn(ws, listecards)
+ finally:
+     print("fin")
+     wb.save(filename=configFichier.filename)
