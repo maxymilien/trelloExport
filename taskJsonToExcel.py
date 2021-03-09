@@ -31,11 +31,13 @@ if os.path.isfile(configFichier.filename):
     #création de la nouvelle feuille
     ws2 = wb.create_sheet(title="tasks")
     fonction.stylesheet(ws2)
+    fonction.dateColumn(ws2, len(listecards))
     try:
         fonction.inserttasks(ws2, listecards, listemembres, listelistes)
             # wrap text pour la colonne des descriptions
-        fonction.wrapcolumn(ws2, listecards)
+        fonction.wrapcolumn(ws2, len(listecards))
         fonction.addfilter(ws2, len(listecards))
+        fonction.dateColumn(ws2, len(listecards))
     finally:
         print("fin")
         wb.save(filename=configFichier.filename)
@@ -45,11 +47,14 @@ else:
  ws = wb.active
  ws.title = "tasks"
  fonction.stylesheet(ws)
+
  try:
   fonction.inserttasks(ws, listecards, listemembres, listelistes)
    #wrap text pour la colonne des descriptions
-  fonction.wrapcolumn(ws, listecards)
+  fonction.wrapcolumn(ws, len(listecards))
+  #ajout des filtre
   fonction.addfilter(ws, len(listecards))
+  fonction.dateColumn(ws, len(listecards))
  finally:
      print("fin")
      wb.save(filename=configFichier.filename)

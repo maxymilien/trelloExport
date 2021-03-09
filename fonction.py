@@ -26,10 +26,14 @@ def stylesheet(ws):
     ws["F1"] = "Equipe"
     ws["F1"].font = configFichier.font
 
-def wrapcolumn(ws, listecards):
-    for row in ws.iter_rows(min_row=1, max_row=len(listecards), min_col=3):
+def wrapcolumn(ws, longueur):
+    for row in ws.iter_rows(min_row=2, max_row=longueur+1, min_col=3):
         for cell in row:
             cell.alignment = configFichier.wrap
+def dateColumn(ws,longueur):
+    for row in ws.iter_rows(min_row=2, max_row=longueur+1, min_col=4):
+        for cell in row:
+            cell.number_format = 'yyyy-mm-dd'
 
 def inserttasks(ws, listecards, listemembres, listelistes):
     # dico d'info à mettre dans l'excel pour une card
@@ -51,7 +55,7 @@ def inserttasks(ws, listecards, listemembres, listelistes):
         if d is None:
             card['D'] = ""
         else:
-            card['D'] = str(d.day) + "-" + str(d.month) + "-" + str(d.year)
+            card['D'] = configFichier.datetime.date(d.year, d.month, d.day)
 
         # récuperation des étiquettes de la tâche + formatage en string
         for label in carte["labels"]:
