@@ -83,3 +83,7 @@ def inserttasks(ws, listecards, listemembres, listelistes):
         card['F'] = mem
         ws.append(card)
         card.clear()
+
+def addfilter(ws,longueur):
+    ws.auto_filter.ref = "A1:F"+str(longueur)
+    ws.auto_filter.add_sort_condition("A2:F"+str(longueur))

@@ -1,6 +1,5 @@
 # -*- coding: utf8 -*-
 import configFichier
-import dateparser
 import os
 import fonction
 """
@@ -36,6 +35,7 @@ if os.path.isfile(configFichier.filename):
         fonction.inserttasks(ws2, listecards, listemembres, listelistes)
             # wrap text pour la colonne des descriptions
         fonction.wrapcolumn(ws2, listecards)
+        fonction.addfilter(ws2, len(listecards))
     finally:
         print("fin")
         wb.save(filename=configFichier.filename)
@@ -49,6 +49,7 @@ else:
   fonction.inserttasks(ws, listecards, listemembres, listelistes)
    #wrap text pour la colonne des descriptions
   fonction.wrapcolumn(ws, listecards)
+  fonction.addfilter(ws, len(listecards))
  finally:
      print("fin")
      wb.save(filename=configFichier.filename)
