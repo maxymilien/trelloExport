@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
-import configFichier
+import configuration
 import os
-import fonction
+import utilitaire
 """
 initialisation de variables
 """
@@ -14,47 +14,52 @@ listecards = {}
 """
 ouverture du fichier json 
 """
-response = configFichier.requests.get("https://trello.com/b/Ih8ZoAQ4.json")
-trello = configFichier.json.loads(response.text)
+response = configuration.requests.get(url=configuration.url)
+trello = configuration.json.loads(response.text)
 listecards = trello["cards"]
 listelistes= trello["lists"]
 listemembres = trello["members"]
 """
 verification si le fichier existe déjà
 """
-if os.path.isfile(configFichier.filename):
+if os.path.isfile(configuration.filename):
     print("update du fichier")
-    wb = configFichier.openpyxl.load_workbook(configFichier.filename)
+    wb = configuration.openpyxl.load_workbook(configuration.filename)
     ws1 = wb["tasks"]
     #backup de l'ancienne feuille de tasks
     ws1.title = "backuptasks"
     #création de la nouvelle feuille
     ws2 = wb.create_sheet(title="tasks")
-    fonction.stylesheet(ws2)
-    fonction.dateColumn(ws2, len(listecards))
+    utilitaire.stylesheet(ws2)
     try:
-        fonction.inserttasks(ws2, listecards, listemembres, listelistes)
+        utilitaire.inserttasks(ws2, listecards, listemembres, listelistes)
             # wrap text pour la colonne des descriptions
-        fonction.wrapcolumn(ws2, len(listecards))
-        fonction.addfilter(ws2, len(listecards))
-        fonction.dateColumn(ws2, len(listecards))
+        utilitaire.wrapcolumn(ws2, len(listecards))
+        #changement du format de la  date
+        utilitaire.dateColumn(ws2, len(listecards))
+        #ajout des rêgles
+        utilitaire.addrules(ws2, len(listecards))
+        # ajout des filtre
+        #utilitaire.addfilter(ws2, len(listecards))
     finally:
         print("fin")
-        wb.save(filename=configFichier.filename)
+        wb.save(filename=configuration.filename)
 else:
- print("nouveau fichier")
- wb = configFichier.openpyxl.Workbook()
- ws = wb.active
- ws.title = "tasks"
- fonction.stylesheet(ws)
-
- try:
-  fonction.inserttasks(ws, listecards, listemembres, listelistes)
-   #wrap text pour la colonne des descriptions
-  fonction.wrapcolumn(ws, len(listecards))
-  #ajout des filtre
-  fonction.addfilter(ws, len(listecards))
-  fonction.dateColumn(ws, len(listecards))
- finally:
-     print("fin")
-     wb.save(filename=configFichier.filename)
+    print("nouveau fichier")
+    wb = configuration.openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "tasks"
+    utilitaire.stylesheet(ws)
+    try:
+        utilitaire.inserttasks(ws, listecards, listemembres, listelistes)
+        #wrap text pour la colonne des descriptions
+        utilitaire.wrapcolumn(ws, len(listecards))
+        # changement du format de la date
+        utilitaire.dateColumn(ws, len(listecards))
+        # ajout des rêgles
+        utilitaire.addrules(ws, len(listecards))
+        # ajout des filtre
+        #utilitaire.addfilter(ws, len(listecards))
+    finally:
+        print("fin")
+        wb.save(filename=configuration.filename)
