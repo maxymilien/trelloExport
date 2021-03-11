@@ -92,9 +92,16 @@ def inserttasks(ws, listecards, listemembres, listelistes):
 
 def addfilter(ws,longueur):
     ws.auto_filter.ref = "A1:F"+str(longueur)
-    ws.auto_filter.add_sort_condition("A2:F"+str(longueur))
+    ws.auto_filter.add_filter_column(0, ["En cours", "Bloqué", "Presque fini", "Terminé !"])
+    ws.auto_filter.add_sort_condition("A1:F"+str(longueur))
 
 def addrules(ws,longueur):
+   #rule pour les dates inférieures
+   redbackground = PatternFill(start_color='FF0000', end_color='FF0000', fill_type='solid')
+   diff = DifferentialStyle(fill=redbackground)
+   #['AND(NOT(ISEMPTY($D1));($D1<TODAY()))']
+   rule5 = Rule(type="expression", dxf=diff, formula=['AND(NOT(ISBLANK($D2)),($D2<TODAY()))'])
+   ws.conditional_formatting.add("D2:D466", rule5)
    #rule pour la liste en cours
    ybackground = PatternFill(start_color='FFFF00', end_color='FFFF00', fill_type='solid')
    diff = DifferentialStyle(fill=ybackground)
@@ -116,9 +123,5 @@ def addrules(ws,longueur):
    rule4 = Rule(type="expression", dxf=diff)
    rule4.formula = ['$A2="Terminé !"']
    ws.conditional_formatting.add("A2:F"+str(longueur+1), rule4)
-   #rule pour les dates inférieures
-   #redbackground = PatternFill(start_color='FF0000', end_color='FF0000', fill_type='solid')
-   #diff = DifferentialStyle(fill=redbackground)
-   #rule5 = Rule(type="expression", operator="lessThan", dxf=diff, formula=['ET(NON(ESTVIDE($D1));($D1<AUJOURDHUI()))'])
-   #ws.conditional_formatting.add("D2:D"+str(longueur+1), rule5)
+
 
