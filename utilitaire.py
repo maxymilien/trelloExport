@@ -92,7 +92,6 @@ def inserttasks(ws, listecards, listemembres, listelistes):
 
 def addfilter(ws,longueur):
     ws.auto_filter.ref = "A1:F"+str(longueur)
-    ws.auto_filter.add_filter_column(0, ["En cours", "Bloqué", "Presque fini", "Terminé !"])
     ws.auto_filter.add_sort_condition("A1:F"+str(longueur))
 
 def addrules(ws,longueur):
