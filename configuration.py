@@ -3,10 +3,9 @@ import json
 import requests
 import datetime
 import dateparser
-# filejson = 'c:\\Users\\jazzt\\desktop\\NAM-IP\\Ih8ZoAQ4.json'
-# filexlsx = 'c:\\Users\\jazzt\\desktop\\NAM-IP\\tasks.xlsx'
-filename = "expo-micro-"+str(datetime.date.today())+".xlsx"
+filename = "stage-"+str(datetime.date.today())+".xlsx"
 url ="https://trello.com/b/Ih8ZoAQ4.json"
+urlStage ="https://trello.com/b/mX2aY5jC.json"
 font = openpyxl.styles.Font(size=12,
                             bold=True)
 
