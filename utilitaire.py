@@ -1,7 +1,7 @@
 import configuration
-from openpyxl.styles import PatternFill, colors
+from openpyxl.styles import PatternFill, Font
 from openpyxl.styles.differential import DifferentialStyle
-from openpyxl.formatting.rule import Rule,CellIsRule
+from openpyxl.formatting.rule import Rule
 def stylesheet(ws):
     # faire un wrap sur description et nom tache
     # colonne des listes
@@ -94,7 +94,13 @@ def addfilter(ws,longueur):
     ws.auto_filter.ref = "A1:F"+str(longueur)
     ws.auto_filter.add_sort_condition("A1:F"+str(longueur))
 
-def addrules(ws,longueur):
+def addrulesCouleur(ws,longueur):
+   #rule pour la liste terminé
+   gbackground = PatternFill(start_color='00CC00', end_color='00CC00', fill_type='solid')
+   diff = DifferentialStyle(fill=gbackground)
+   rule4 = Rule(type="expression", dxf=diff)
+   rule4.formula = ['$A2="Terminé !"']
+   ws.conditional_formatting.add("A2:F"+str(longueur+1), rule4)
    #rule pour les dates inférieures
    redbackground = PatternFill(start_color='FF0000', end_color='FF0000', fill_type='solid')
    diff = DifferentialStyle(fill=redbackground)
@@ -116,11 +122,10 @@ def addrules(ws,longueur):
    diff = DifferentialStyle(fill=lgbackground)
    rule3 = Rule(type="expression", dxf=diff, formula=['$A2="Presque fini"'])
    ws.conditional_formatting.add("A2:F"+str(longueur+1), rule3)
-   #rule pour la liste terminé
-   gbackground = PatternFill(start_color='00CC00', end_color='00CC00', fill_type='solid')
-   diff = DifferentialStyle(fill=gbackground)
-   rule4 = Rule(type="expression", dxf=diff)
-   rule4.formula = ['$A2="Terminé !"']
-   ws.conditional_formatting.add("A2:F"+str(longueur+1), rule4)
 
 
+def addrulesBW(ws):
+    # rule pour les dates inférieures
+    diff = DifferentialStyle(font=Font(bold=True))
+    rule5 = Rule(type="expression", dxf=diff, formula=['AND(NOT(ISBLANK($D2)),($D2<TODAY()))'])
+    ws.conditional_formatting.add("D2:D466", rule5)
